@@ -1,7 +1,7 @@
 #ifndef FONT5X7_H
 #define FONT5X7_H
 
-#include "stm32f1xx_hal.h"
+#include "stdint.h"
 
 // Standard ASCII 5x7 font
 
