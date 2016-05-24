@@ -40,19 +40,6 @@
 #define     SSD1306_MIN(a,b)            (((a) < (b)) ? (a) : (b))
 #define     SSD1306_MAX(a,b)            (((a) > (b)) ? (a) : (b))
 
-// Converts degrees to radians to degrees macro
-#define		M_PI												3.141593
-#define 	degreesToRadians(angleDegrees)		(double)(angleDegrees * M_PI / 180.0)
-#define 	radiansToDegrees(angleRadians)		(double)(angleRadians * 180.0 / M_PI)
-//#define round(x) ((x)>=0?(long)((x)+0.5):(long)((x)-0.5))
-
-#define 	LED1_ON()     				HAL_GPIO_WritePin( GPIOB, GPIO_PIN_9, GPIO_PIN_RESET)
-#define 	LED1_OFF()     				HAL_GPIO_WritePin( GPIOB, GPIO_PIN_9, GPIO_PIN_SET)
-#define 	LED1_TOGGLE()				HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_9)
-#define 	LED2_ON()     				HAL_GPIO_WritePin( GPIOB, GPIO_PIN_8, GPIO_PIN_RESET)
-#define 	LED2_OFF()    				HAL_GPIO_WritePin( GPIOB, GPIO_PIN_8, GPIO_PIN_SET)
-#define		LED2_TOGGLE()   			HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_8)
-
 #define     BLACK                       0
 #define     WHITE                       1
 #define     INVERSE                     2
