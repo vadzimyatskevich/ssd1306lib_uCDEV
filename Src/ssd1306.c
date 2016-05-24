@@ -43,12 +43,12 @@ static uint8_t   _height   = SSD1306_LCDHEIGHT;
 
 
 /**
- *  \brief SPI write
+ *  \brief SPI send byte function 
  *  
- *  \param [in] byte Parameter_Description
- *  \return Return_Description
+ *  \param [in] byte input data byte
+ *  \return n/a
  *  
- *  \details Details
+ *  \details n/a
  *  
  *  \code
  *  \endcode
@@ -63,9 +63,9 @@ inline void ssd1306SendByte(uint8_t byte)
  *  \brief Initialises the SSD1306 LCD display
  *  
  *  \param [in] vccstate Parameter_Description
- *  \return Return_Description
+ *  \return n/a
  *  
- *  \details Details
+ *  \details n/a
  */
 void  ssd1306Init(uint8_t vccstate)
 {
@@ -112,9 +112,9 @@ void  ssd1306Init(uint8_t vccstate)
 /**
  *  \brief Renders the contents of the pixel buffer on the LCD
  *  
- *  \return Return_Description
+ *  \return n/a
  *  
- *  \details Details
+ *  \details n/a
  */
 void ssd1306Refresh(void) 
 {
@@ -135,9 +135,9 @@ void ssd1306Refresh(void)
 /**
  *  \brief Enable the OLED panel
  *  
- *  \return Return_Description
+ *  \return n/a
  *  
- *  \details Details
+ *  \details n/a
  */
 void ssd1306TurnOn(void)
 {
@@ -146,9 +146,9 @@ void ssd1306TurnOn(void)
 /**
  *  \brief Disable the OLED panel
  *  
- *  \return Return_Description
+ *  \return n/a
  *  
- *  \details Details
+ *  \details n/a
  */
 void ssd1306TurnOff(void)
 {
@@ -157,11 +157,9 @@ void ssd1306TurnOff(void)
 
 /**************************************************************************/
 /*! 
-    @brief Draws a single pixel in image buffer
-    @param[in]  x
-                The x position (0..127)
-    @param[in]  y
-                The y position (0..63)
+    \brief Draws a single pixel in image buffer
+    \param x The x position (0..127)
+    \param y The y position (0..63)
 */
 /**************************************************************************/
 void   ssd1306DrawPixel(int16_t x, int16_t y, uint16_t color, uint16_t layer) 
@@ -185,17 +183,14 @@ void   ssd1306DrawPixel(int16_t x, int16_t y, uint16_t color, uint16_t layer)
   case INVERSE: buffer_ol[x+ (y/8)*SSD1306_LCDWIDTH] ^=  (1 << (y&7)); break; 
   }
 #endif
-//	ssd1306Refresh();
 }
 
 /**************************************************************************/
 /*! 
-    @brief Gets the value (1 or 0) of the specified pixel from the buffer
-    @param[in]  x
-                The x position (0..127)
-    @param[in]  y
-                The y position (0..63)
-    @return     1 if the pixel is enabled, 0 if disabled
+    \brief Gets the value (1 or 0) of the specified pixel from the buffer
+    \param x The x position (0..127)
+    \param y The y position (0..63)
+    \return     1 if the pixel is enabled, 0 if disabled
 */
 /**************************************************************************/
 uint8_t ssd1306GetPixel(int16_t x, int16_t y)
@@ -207,7 +202,7 @@ uint8_t ssd1306GetPixel(int16_t x, int16_t y)
 
 
 /**
- *  \brief Clears the screen
+ *  \brief Clears the screen buffer
  *  
  *  \param [in] layer Parameter_Description
  *  \return Return_Description
@@ -519,7 +514,7 @@ void    ssd1306FillCircle(int16_t x0, int16_t y0, int16_t r,uint16_t color, uint
 
 /**************************************************************************/
 /*!
-    @brief Used to do circles and roundrects
+    \brief Used to do circles and roundrects
 */
 /**************************************************************************/
 void ssd1306FillCircleHelper(int16_t x0, int16_t y0, int16_t r, uint8_t cornername, int16_t delta, uint16_t color, uint16_t layer) {
