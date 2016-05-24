@@ -51,7 +51,6 @@
 #define     SSD1306_LCDWIDTH            128
 #define     SSD1306_LCDHEIGHT          	64
 
-#define	    MAX_POLY_CORNERS            10
 // Commands
 #define SSD1306_SETCONTRAST             0x81
 #define SSD1306_DISPLAYALLON_RESUME     0xA4
@@ -79,8 +78,8 @@
 // macros
 #define SSD1306MSDELAY(c)               HAL_Delay( c );
 
-
-//
+// set to 0 if you don't use polygons
+#define	    MAX_POLY_CORNERS            10
 typedef struct {
 	double x;
 	double y;
@@ -90,6 +89,7 @@ typedef struct {
 	SSD1306_pointTypeDef * SSD1306_points_pointer;
 	int SSD1306_points_number;
 }	SSD1306_polyTypeDef;
+
 
 // Initialisation/Config Prototypes
 inline void ssd1306SendByte(uint8_t byte);
