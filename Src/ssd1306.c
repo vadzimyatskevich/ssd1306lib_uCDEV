@@ -190,23 +190,6 @@ void   ssd1306DrawPixel(int16_t x, int16_t y, uint16_t color, uint16_t layer)
 
 /**************************************************************************/
 /*! 
-    @brief Clears a single pixel in image buffer
-    @param[in]  x
-                The x position (0..127)
-    @param[in]  y
-                The y position (0..63)
-*/
-/**************************************************************************/
-//void ssd1306ClearPixel(int16_t x, int16_t y) 
-//{
-//  if ((x >= SSD1306_LCDWIDTH) || (x < 0) || (y >= SSD1306_LCDHEIGHT) || (y < 0))
-//    return;
-
-//  buffer[x+ (y/8)*SSD1306_LCDWIDTH] &= ~(1 << y%8); 
-//}
-
-/**************************************************************************/
-/*! 
     @brief Gets the value (1 or 0) of the specified pixel from the buffer
     @param[in]  x
                 The x position (0..127)
@@ -221,6 +204,7 @@ uint8_t ssd1306GetPixel(int16_t x, int16_t y)
 
   return buffer[x+ (y/8)*SSD1306_LCDWIDTH] & (1 << y%8) ? 1 : 0;
 }
+
 
 /**
  *  \brief Clears the screen
@@ -290,6 +274,7 @@ void ssd1306DrawLine(int16_t x0, int16_t y0, int16_t x1, int16_t y1, uint16_t co
     }
   }
 }
+
 /**
  *  \brief Brief
  *  
@@ -381,7 +366,6 @@ void ssd1306_FillPolygon(SSD1306_polyTypeDef * SSD1306_poly, double x, double y,
 		}
 	}
 }
-
 
 /**
  *  \brief Brief
