@@ -20,6 +20,7 @@
 #include <stdlib.h>
 #include "ssd1306.h"
 #include "font5x7.h"
+#include "font8x11.h"
 #include "mxconstants.h"
 
 #define CMD(c)        do { HAL_GPIO_WritePin( DC_GPIO_Port, DC_Pin, GPIO_PIN_RESET); \
@@ -601,16 +602,16 @@ uint16_t color, uint16_t layer) {
 
   if( (x >= _width)            || // Clip right
       (y >= _height)           || // Clip bottom
-      ((x + 6 * size - 1) < 0) || // Clip left
-      ((y + 8 * size - 1) < 0))   // Clip top
+      ((x + font5x7.width * size - 1) < 0) || // Clip left
+      ((y + font5x7.height * size - 1) < 0))   // Clip top
   return;
 
-  for (int8_t i=0; i<6; i++ ) {
+  for (int8_t i=0; i < font5x7.width; i++ ) {
     int8_t line;
-    if (i == 5) 
+    if (i == font5x7.width) 
     line = 0x0;
     else 
-    line = (int8_t)*(font5x7+(c*5)+i);
+    line = (int8_t)*(font5x7.font+(c*font5x7.width)+i);
     for (int8_t j = 0; j<8; j++) {
       if (line & 0x1) {
         if (size == 1) // default size
