@@ -58,7 +58,6 @@ inline void ssd1306SendByte(uint8_t byte)
 	HAL_SPI_Transmit  ( &hspi2,  (uint8_t *) &byte, 1, 20) ;
 }
 
-/**************************************************************************/
 /**
  *  \brief Initialises the SSD1306 LCD display
  *  
@@ -155,13 +154,12 @@ void ssd1306TurnOff(void)
     CMD(SSD1306_DISPLAYOFF);
 }
 
-/**************************************************************************/
-/*! 
-    \brief Draws a single pixel in image buffer
-    \param x The x position (0..127)
-    \param y The y position (0..63)
-*/
-/**************************************************************************/
+
+/**
+ *  \brief Draws a single pixel in image buffer
+ *  \param x The x position (0..127)
+ *  \param y The y position (0..63)
+ */
 void   ssd1306DrawPixel(int16_t x, int16_t y, uint16_t color, uint16_t layer) 
 {
   if ((x >= SSD1306_LCDWIDTH) || (x < 0) || (y >= SSD1306_LCDHEIGHT) || (y < 0))
@@ -185,14 +183,14 @@ void   ssd1306DrawPixel(int16_t x, int16_t y, uint16_t color, uint16_t layer)
 #endif
 }
 
-/**************************************************************************/
-/*! 
+
+/**
     \brief Gets the value (1 or 0) of the specified pixel from the buffer
     \param x The x position (0..127)
     \param y The y position (0..63)
-    \return     1 if the pixel is enabled, 0 if disabled
+    \return 1 if the pixel is enabled, 0 if disabled
 */
-/**************************************************************************/
+
 uint8_t ssd1306GetPixel(int16_t x, int16_t y)
 {
   if ((x >= SSD1306_LCDWIDTH) || (x < 0) || (y >= SSD1306_LCDHEIGHT) || (y < 0)) return 0;
@@ -204,10 +202,9 @@ uint8_t ssd1306GetPixel(int16_t x, int16_t y)
 /**
  *  \brief Clears the screen buffer
  *  
- *  \param [in] layer Parameter_Description
+ *  \param[in] layer to clear
  *  \return Return_Description
  *  
- *  \details Details
  */
 void ssd1306ClearScreen(uint16_t layer) 
 {
@@ -512,11 +509,10 @@ void    ssd1306FillCircle(int16_t x0, int16_t y0, int16_t r,uint16_t color, uint
   ssd1306FillCircleHelper(x0, y0, r, 3, 0, color, layer);
 }
 
-/**************************************************************************/
+
 /*!
-    \brief Used to do circles and roundrects
-*/
-/**************************************************************************/
+ *    \brief Used to do circles and roundrects
+ */
 void ssd1306FillCircleHelper(int16_t x0, int16_t y0, int16_t r, uint8_t cornername, int16_t delta, uint16_t color, uint16_t layer) {
 
   int16_t f     = 1 - r;
@@ -545,11 +541,9 @@ void ssd1306FillCircleHelper(int16_t x0, int16_t y0, int16_t r, uint8_t cornerna
     }
   }
 }
-/**************************************************************************/
-/*!
-    @brief Draws a filled rectangle
-*/
-/**************************************************************************/
+/**
+ *    @brief Draws a filled rectangle
+ */
 void ssd1306FillRect(uint8_t x, uint8_t y, uint8_t w, uint8_t h, uint16_t color, uint16_t layer) {
 	uint8_t x0, x1, y1;
 
@@ -561,11 +555,9 @@ void ssd1306FillRect(uint8_t x, uint8_t y, uint8_t w, uint8_t h, uint16_t color,
 					ssd1306DrawPixel( x, y, color, layer);
 }
 
-/**************************************************************************/
 /*!
-    @brief Draws a rectangle
-*/
-/**************************************************************************/
+ *    @brief Draws a rectangle
+ */
 void ssd1306DrawRect(int16_t x, int16_t y, int16_t w, int16_t h, uint16_t color, uint16_t layer) {
 	int16_t x1, y1;
 	if ( (w == 0) | (h == 0)) return;
@@ -583,11 +575,9 @@ void ssd1306DrawRect(int16_t x, int16_t y, int16_t w, int16_t h, uint16_t color,
 	}
 }
 
-/**************************************************************************/
-/*!
-    @brief Draws a filled rectangle
-*/
-/**************************************************************************/
+/**
+ *    @brief Draws a filled rectangle
+ */
 void ssd1306DrawBitmap(int16_t x, int16_t y, uint8_t *bitmap, int16_t w, int16_t h, uint16_t color) {
 
   uint8_t *pbitmap;
@@ -603,11 +593,9 @@ void ssd1306DrawBitmap(int16_t x, int16_t y, uint8_t *bitmap, int16_t w, int16_t
   }
 }
 
-/**************************************************************************/
-/*! 
-    @brief Draw a character
-*/
-/**************************************************************************/
+/** 
+ *    @brief Draw a character
+ */
 void  ssd1306DrawChar(int16_t x, int16_t y, uint8_t c, uint8_t size, 
 uint16_t color, uint16_t layer) {
 
@@ -636,32 +624,30 @@ uint16_t color, uint16_t layer) {
   }
 }
 
-/**************************************************************************/
-/*!
-    @brief  Draws a string using the supplied font data.
-    @param[in]  x
-                Starting x co-ordinate
-    @param[in]  y
-                Starting y co-ordinate
-    @param[in]  text
-                The string to render
-    @param[in]  font
-                Pointer to the FONT_DEF to use when drawing the string
-    @section Example
-    @code 
-    #include "drivers/lcd/bitmap/ssd1306/ssd1306.h"
-    #include "drivers/lcd/smallfonts.h"
-    
-    // Configure the pins and initialise the LCD screen
-    ssd1306Init();
-    // Render some text on the screen
-    ssd1306DrawString(1, 10, "5x8 System", Font_System5x8);
-    ssd1306DrawString(1, 20, "7x8 System", Font_System7x8);
-    // Refresh the screen to see the results
-    ssd1306Refresh();
-    @endcode
+/**
+ *    @brief  Draws a string using the supplied font data.
+ *    @param[in]  x
+ *                Starting x co-ordinate
+ *    @param[in]  y
+ *                Starting y co-ordinate
+ *    @param[in]  text
+ *                The string to render
+ *    @param[in]  font
+ *                Pointer to the FONT_DEF to use when drawing the string
+ *    @section Example
+ *    @code 
+ *    #include "drivers/lcd/bitmap/ssd1306/ssd1306.h"
+ *   #include "drivers/lcd/smallfonts.h"
+ *   
+ *    // Configure the pins and initialise the LCD screen
+ *    ssd1306Init();
+ *    // Render some text on the screen
+ *    ssd1306DrawString(1, 10, "5x8 System", Font_System5x8);
+ *    ssd1306DrawString(1, 20, "7x8 System", Font_System7x8);
+ *    // Refresh the screen to see the results
+ *    ssd1306Refresh();
+ *    @endcode
 */
-/**************************************************************************/
 void  ssd1306DrawString(int16_t x, int16_t y, const char *text, uint8_t size, 
                         uint16_t color, uint16_t layer)
 {
@@ -672,8 +658,7 @@ void  ssd1306DrawString(int16_t x, int16_t y, const char *text, uint8_t size,
   }
 }
 
-/**************************************************************************/
-/*!
+/**
     @brief  Shifts the contents of the frame buffer up the specified
             number of pixels
     @param[in]  height
@@ -681,7 +666,6 @@ void  ssd1306DrawString(int16_t x, int16_t y, const char *text, uint8_t size,
                 a blank space at the bottom of the frame buffer x pixels
                 high
 */
-/**************************************************************************/
 void ssd1306ShiftFrameBuffer( uint16_t height, uint16_t direction)
 {  
   int16_t y, x;
@@ -763,7 +747,7 @@ void ssd1306ShiftFrameBuffer( uint16_t height, uint16_t direction)
 }
 
 /**
- *  \brief Brief
+ *  \brief ssd1306MixFrameBuffer
  *  
  *  \return Return_Description
  *  
