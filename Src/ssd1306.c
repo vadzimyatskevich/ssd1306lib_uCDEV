@@ -21,6 +21,7 @@
 #include "ssd1306.h"
 #include "font5x7.h"
 #include "font8x11.h"
+#include "arial_16pt.h"
 #include "mxconstants.h"
 
 #define CMD(c)        do { HAL_GPIO_WritePin( DC_GPIO_Port, DC_Pin, GPIO_PIN_RESET); \
@@ -39,9 +40,9 @@ static uint8_t    buffer[SSD1306_LCDWIDTH * SSD1306_LCDHEIGHT / 8];
 static uint8_t    buffer_ol[SSD1306_LCDWIDTH * SSD1306_LCDHEIGHT / 8];
 #endif    
 
-static uint8_t   _width    = SSD1306_LCDWIDTH;
-static uint8_t   _height   = SSD1306_LCDHEIGHT;
-
+static uint8_t      _width    = SSD1306_LCDWIDTH;
+static uint8_t      _height   = SSD1306_LCDHEIGHT;
+       FONT_INFO    *_font;
 
 /**
  *  \brief SPI send byte function 
@@ -69,7 +70,8 @@ inline void ssd1306SendByte(uint8_t byte)
  */
 void  ssd1306Init(uint8_t vccstate)
 {
-
+  _font = (FONT_INFO*)&arial_16ptFontInfo;
+    
   HAL_Delay  (100);
   // Initialisation sequence
   CMD(SSD1306_DISPLAYOFF);                    // 0xAE
@@ -599,30 +601,56 @@ void ssd1306DrawBitmap(int16_t x, int16_t y, uint8_t *bitmap, int16_t w, int16_t
  */
 void  ssd1306DrawChar(int16_t x, int16_t y, uint8_t c, uint8_t size, 
 uint16_t color, uint16_t layer) {
-
-  if( (x >= _width)            || // Clip right
-      (y >= _height)           || // Clip bottom
-      ((x + font5x7.width * size - 1) < 0) || // Clip left
-      ((y + font5x7.height * size - 1) < 0))   // Clip top
-  return;
-
-  for (int8_t i=0; i < font5x7.width; i++ ) {
-    int8_t line;
-    if (i == font5x7.width) 
-    line = 0x0;
-    else 
-    line = (int8_t)*(font5x7.font+(c*font5x7.width)+i);
-    for (int8_t j = 0; j<8; j++) {
-      if (line & 0x1) {
-        if (size == 1) // default size
-        ssd1306DrawPixel(x+i, y+j, color, layer);
-        else {  // big size
-          ssd1306DrawRect(x+(i*size), y+(j*size), size, size, color, layer);
-        } 
-      } 
-      line >>= 1;
-    }
+      int16_t i,j,k, _x, _y;
+      uint16_t line;
+//  if( (x >= _width)            || // Clip right
+//      (y >= _height)           || // Clip bottom
+//      ((x + _font->width * size - 1) < 0) || // Clip left
+//      ((y + _font->height * size - 1) < 0))   // Clip top
+//  return;
+  c = c - _font->startChar;//
+  line = _font->charInfo[c].offset; 
+  // scan height
+  for ( i=0; i < _font->charInfo[c].heightBits; i++ ) {
+      k =  (_font->charInfo[c].widthBits-1)/8 + 1; //number of bytes in a row
+      _x = 0;
+      do {
+        int16_t l = _font->data[line]; 
+          // scan width
+          for ( j = 0; j < 8; j++ ) {
+            if ( l & 0x80 ) {
+                if (size == 1) {
+                    ssd1306DrawPixel( x+_x, y+i, color, layer ); 
+                } else {
+                    ssd1306DrawRect(x+(_x*size), y+(i*size), size, size, color, layer);
+                }
+              
+            }
+          l <<= 1;
+          _x++;
+        }
+        k--;
+        line++;
+      } while (k > 0);
   }
+    
+//  for (int8_t i=0; i <_font->width; i++ ) {
+//    int8_t line;
+//    if (i == _font->width) 
+//    line = 0x0;
+//    else 
+//    line = (int8_t)*(_font->font+(c*_font->width)+i);
+//    for (int8_t j = 0; j<_font->height; j++) {
+//      if (line & 0x1) {
+//        if (size == 1) // default size
+//        ssd1306DrawPixel(x+i, y+j, color, layer);
+//        else {  // big size
+//          ssd1306DrawRect(x+(i*size), y+(j*size), size, size, color, layer);
+//        } 
+//      } 
+//      line >>= 1;
+//    }
+//  }
 }
 
 /**
@@ -652,10 +680,13 @@ uint16_t color, uint16_t layer) {
 void  ssd1306DrawString(int16_t x, int16_t y, const char *text, uint8_t size, 
                         uint16_t color, uint16_t layer)
 {
-  uint8_t l;
+  static uint16_t l, ln, tmp;
+  ln =  0;
   for (l = 0; l < strlen(text); l++)
   {
-    ssd1306DrawChar(x + (l * (5*size + 1)), y, text[l], size, color, layer);
+    tmp = text[l] - _font->startChar;//
+    ssd1306DrawChar(x + (ln * size + 1), y, text[l], size, color, layer);
+    ln = ln + _font->charInfo[tmp].widthBits + 1;
   }
 }
 
