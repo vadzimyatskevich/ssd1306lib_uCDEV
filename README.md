@@ -2,7 +2,7 @@
 ssd1306 display controller driver for STM32
 pure software grafic display driver
 
-** pros: **
+**pros:**
 * easy portable
-** cons: **
+**cons:**
 * super slow :)
