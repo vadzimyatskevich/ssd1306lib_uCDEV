@@ -19,9 +19,6 @@
 #include <string.h>
 #include <stdlib.h>
 #include "ssd1306.h"
-#include "font5x7.h"
-#include "font8x11.h"
-#include "arial_16pt.h"
 #include "mxconstants.h"
 
 #define CMD(c)        do { HAL_GPIO_WritePin( DC_GPIO_Port, DC_Pin, GPIO_PIN_RESET); \
@@ -70,7 +67,7 @@ inline void ssd1306SendByte(uint8_t byte)
  */
 void  ssd1306Init(uint8_t vccstate)
 {
-  _font = (FONT_INFO*)&arial_16ptFontInfo;
+  _font = (FONT_INFO*)&courierNew_16ptFontInfo;
     
   HAL_Delay  (100);
   // Initialisation sequence
@@ -599,16 +596,26 @@ void ssd1306DrawBitmap(int16_t x, int16_t y, uint8_t *bitmap, int16_t w, int16_t
 /** 
  *    @brief Draw a character
  */
+void  ssd1306SetFont(FONT_INFO * f) {
+  _font = f;
+}
+
+/** 
+ *    @brief Draw a character
+ */
 void  ssd1306DrawChar(int16_t x, int16_t y, uint8_t c, uint8_t size, 
 uint16_t color, uint16_t layer) {
       int16_t i,j,k, _x, _y;
       uint16_t line;
-//  if( (x >= _width)            || // Clip right
-//      (y >= _height)           || // Clip bottom
-//      ((x + _font->width * size - 1) < 0) || // Clip left
-//      ((y + _font->height * size - 1) < 0))   // Clip top
-//  return;
+
   c = c - _font->startChar;//
+  // skip invisible characters
+  if( (x >= _width)            || // Clip right
+      (y >= _height)           || // Clip bottom
+      ((x + _font->charInfo[c].widthBits * size - 1) < 0) || // Clip left
+      ((y + _font->charInfo[c].heightBits * size - 1) < 0))   // Clip top
+  return;
+  
   line = _font->charInfo[c].offset; 
   // scan height
   for ( i=0; i < _font->charInfo[c].heightBits; i++ ) {
@@ -633,24 +640,7 @@ uint16_t color, uint16_t layer) {
         line++;
       } while (k > 0);
   }
-    
-//  for (int8_t i=0; i <_font->width; i++ ) {
-//    int8_t line;
-//    if (i == _font->width) 
-//    line = 0x0;
-//    else 
-//    line = (int8_t)*(_font->font+(c*_font->width)+i);
-//    for (int8_t j = 0; j<_font->height; j++) {
-//      if (line & 0x1) {
-//        if (size == 1) // default size
-//        ssd1306DrawPixel(x+i, y+j, color, layer);
-//        else {  // big size
-//          ssd1306DrawRect(x+(i*size), y+(j*size), size, size, color, layer);
-//        } 
-//      } 
-//      line >>= 1;
-//    }
-//  }
+
 }
 
 /**
