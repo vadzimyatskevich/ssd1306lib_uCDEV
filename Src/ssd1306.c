@@ -19,7 +19,6 @@
 #include <string.h>
 #include <stdlib.h>
 #include "ssd1306.h"
-#include "mxconstants.h"
 
 #define CMD(c)        do { HAL_GPIO_WritePin( DC_GPIO_Port, DC_Pin, GPIO_PIN_RESET); \
                            ssd1306SendByte( c ); \
@@ -29,7 +28,7 @@
                          } while (0); 
 #define swap(a, b)       { int16_t t = a; a = b; b = t; }
 												 
-extern SPI_HandleTypeDef hspi2;										 
+extern SPI_HandleTypeDef hspi2;                     // stm32 specific spi handler
 
 static uint8_t    buffer[SSD1306_LCDWIDTH * SSD1306_LCDHEIGHT / 8];
 
@@ -52,9 +51,9 @@ static uint8_t      _height   = SSD1306_LCDHEIGHT;
  *  \code
  *  \endcode
  */
-inline void ssd1306SendByte(uint8_t byte)
+void ssd1306SendByte(uint8_t byte)
 {
-	HAL_SPI_Transmit  ( &hspi2,  (uint8_t *) &byte, 1, 20) ;
+	HAL_SPI_Transmit  ( &hspi2,  (uint8_t *) &byte, 1, 20) ;    // stm32 specific spi function, specify to your needs
 }
 
 /**
@@ -136,7 +135,7 @@ void ssd1306Refresh(void)
  *  
  *  \return n/a
  *  
- *  \details n/a
+ *  \details send enable command to the display controller
  */
 void ssd1306TurnOn(void)
 {
@@ -159,6 +158,8 @@ void ssd1306TurnOff(void)
  *  \brief Draws a single pixel in image buffer
  *  \param x The x position (0..127)
  *  \param y The y position (0..63)
+ *  \param color The color (BLACK, WHITE, INVERSE)
+
  */
 void   ssd1306DrawPixel(int16_t x, int16_t y, uint16_t color, uint16_t layer) 
 {
@@ -219,12 +220,13 @@ void ssd1306ClearScreen(uint16_t layer)
 /**
  *  \brief Brief
  *  
- *  \param [in] x0 Parameter_Description
- *  \param [in] y0 Parameter_Description
- *  \param [in] x1 Parameter_Description
- *  \param [in] y1 Parameter_Description
- *  \param [in] color Parameter_Description
- *  \return Return_Description
+ *  \param[in] x0 point 1 x coord
+ *  \param[in] y0 point 1 y coord
+ *  \param[in] x1 point 2 x coord
+ *  \param[in] y1 point 2 y coord
+ *  \param[in] color The color (BLACK, WHITE, INVERSE)
+ *  \param[in] layer The layer to draw (LAYER0, LAYER1)
+ *  \return void
  *  
  *  \details Details
  */
@@ -603,18 +605,22 @@ void  ssd1306SetFont(FONT_INFO * f) {
 /** 
  *    @brief Draw a character
  */
-void  ssd1306DrawChar(int16_t x, int16_t y, uint8_t c, uint8_t size, 
+int16_t  ssd1306DrawChar(int16_t x, int16_t y, uint8_t c, uint8_t size, 
 uint16_t color, uint16_t layer) {
       int16_t i,j,k, _x, _y;
       uint16_t line;
 
-  c = c - _font->startChar;//
+  if( (c < _font->startChar) ||   // skip if character don't exist
+      (c > _font->endChar))        // skip if character don't exist
+  return 0;
+  
+  c = c - _font->startChar;
   // skip invisible characters
-  if( (x >= _width)            || // Clip right
-      (y >= _height)           || // Clip bottom
-      ((x + _font->charInfo[c].widthBits * size - 1) < 0) || // Clip left
-      ((y + _font->charInfo[c].heightBits * size - 1) < 0))   // Clip top
-  return;
+//  if( (x >= _width)            ||   // Clip right
+//      (y >= _height)           ||   // Clip bottom
+//      ((x + _font->charInfo[c].widthBits * size - 1) < 0) || // Clip left
+//      ((y + _font->charInfo[c].heightBits * size - 1) < 0))  // Clip top
+//  return 0;
   
   line = _font->charInfo[c].offset; 
   // scan height
@@ -640,7 +646,8 @@ uint16_t color, uint16_t layer) {
         line++;
       } while (k > 0);
   }
-
+//    ssd1306Refresh();
+  return _font->charInfo[c].widthBits; // return characher width
 }
 
 /**
@@ -655,14 +662,6 @@ uint16_t color, uint16_t layer) {
  *                Pointer to the FONT_DEF to use when drawing the string
  *    @section Example
  *    @code 
- *    #include "drivers/lcd/bitmap/ssd1306/ssd1306.h"
- *   #include "drivers/lcd/smallfonts.h"
- *   
- *    // Configure the pins and initialise the LCD screen
- *    ssd1306Init();
- *    // Render some text on the screen
- *    ssd1306DrawString(1, 10, "5x8 System", Font_System5x8);
- *    ssd1306DrawString(1, 20, "7x8 System", Font_System7x8);
  *    // Refresh the screen to see the results
  *    ssd1306Refresh();
  *    @endcode
@@ -670,13 +669,12 @@ uint16_t color, uint16_t layer) {
 void  ssd1306DrawString(int16_t x, int16_t y, const char *text, uint8_t size, 
                         uint16_t color, uint16_t layer)
 {
-  static uint16_t l, ln, tmp;
-  ln =  0;
+  static uint16_t l, pos, tmp;
+  pos =  0;
   for (l = 0; l < strlen(text); l++)
   {
     tmp = text[l] - _font->startChar;//
-    ssd1306DrawChar(x + (ln * size + 1), y, text[l], size, color, layer);
-    ln = ln + _font->charInfo[tmp].widthBits + 1;
+    pos = pos + ssd1306DrawChar(x + (pos * size + 1), y, text[l], size, color, layer);
   }
 }
 
